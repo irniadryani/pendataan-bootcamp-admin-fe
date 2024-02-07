@@ -1,0 +1,35 @@
+::-ms-reveal {
+	display: none;
+}
+
+/* Customize scrollbar width */
+::-webkit-scrollbar {
+	width: 4px;
+	height: 4px;
+	border: none;
+}
+
+/* Customize scrollbar track */
+::-webkit-scrollbar-track {
+	background-color: #d4d4d4;
+	opacity: 1;
+	border-radius: 5px;
+	height: 6px;
+	mix-blend-mode: multiply;
+}
+
+/* Customize scrollbar thumb */
+::-webkit-scrollbar-thumb {
+	background-color: #939393;
+	border-radius: 5px;
+}
+
+.fixed-navbar {
+	background: rgba(244, 244, 249, 0.5) !important;
+	transition: background 1s ease-in-out;
+	backdrop-filter: blur(10px);
+}
+
+.navbar-transition {
+	transition: background 1s ease-in-out;
+}
