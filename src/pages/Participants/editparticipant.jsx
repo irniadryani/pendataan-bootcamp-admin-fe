@@ -23,7 +23,6 @@ export default function EditParticipant() {
   console.log("single id", id);
   console.log("curent pagination", currentPaginationTable);
 
-
   const {
     register,
     handleSubmit: submitEditParticipant,
@@ -71,12 +70,12 @@ export default function EditParticipant() {
   useEffect(() => {
     if (!loadingSingleParticipant && dataSingleParticipant) {
       resetEditParticipant({
-        nama_peserta: dataSingleParticipant.nama_peserta,
-        email: dataSingleParticipant.email,
-        nomor_handphone: dataSingleParticipant.nomor_handphone,
-        alamat_rumah: dataSingleParticipant.alamat_rumah,
-        link_github: dataSingleParticipant.link_github,
-        cv: dataSingleParticipant.cv,
+        nama_peserta: dataSingleParticipant.nama_peserta || "",
+        email: dataSingleParticipant.email || "",
+        nomor_handphone: dataSingleParticipant.nomor_handphone || "",
+        alamat_rumah: dataSingleParticipant.alamat_rumah || "",
+        link_github: dataSingleParticipant.link_github || "",
+        cv: dataSingleParticipant.cv || "",
       });
 
       setValue("image", dataSingleParticipant.image);
@@ -119,12 +118,24 @@ export default function EditParticipant() {
     const batchData = new FormData();
     console.log("data", batchData);
 
-    batchData.append("nama_peserta", data.nama_peserta);
-    batchData.append("email", data.email);
-    batchData.append("nomor_handphone", data.nomor_handphone);
-    batchData.append("alamat_rumah", data.alamat_rumah);
-    batchData.append("link_github", data.link_github);
-    batchData.append("cv", data.cv);
+    if (data.nama_peserta !== null) {
+      batchData.append("nama_peserta", data.nama_peserta);
+    }
+    if (data.email !== null) {
+      batchData.append("email", data.email);
+    }
+    if (data.nomor_handphone !== null) {
+      batchData.append("nomor_handphone", data.nomor_handphone);
+    }
+    if (data.alamat_rumah !== null) {
+      batchData.append("alamat_rumah", data.alamat_rumah);
+    }
+    if (data.link_github !== null) {
+      batchData.append("link_github", data.link_github);
+    }
+    if (data.cv !== null) {
+      batchData.append("cv", data.cv);
+    }
 
     if (selectedFile) {
       batchData.append("image", selectedFile);
