@@ -89,18 +89,16 @@ export default function Participants() {
         </div>
 
         <div className="flex justify-between items-center">
-          <div className="flex mt-10 z-10">
+          <div className="flex mt-10 z-10 gap-5">
             <FilterBoxStatus onSelectStatus={handleStatusChange} />
-          </div>
-          <div className="flex mt-10 z-10">
             <FilterBoxBatch onSelectBatch={handleBatchChange} />
           </div>
-          <div className="flex items-center gap-2 pl-4 max-w-[200px] mt-10 rounded-2xl bg-white border border-[#06476F] hover:border-blue-500 focus:border-[#06476F]">
-            <IoMdSearch fontSize="1.125rem" />
+          <div className="flex items-center gap-2 pl-4 max-w-[200px] mt-10 rounded-lg bg-white border border-[#06476F] hover:border-blue-500 focus:border-[#06476F]">
+            <IoMdSearch fontSize="1.125 rem" color="#06476F"/>
             <input
               type="text"
-              className="flex h-10 pe-4 pb-1 w-full rounded-2xl outline-none"
-              placeholder="Search..."
+              className="flex h-10 pe-4 pb-1 w-full rounded-lg outline-none text-sm"
+              placeholder="Search Participant"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

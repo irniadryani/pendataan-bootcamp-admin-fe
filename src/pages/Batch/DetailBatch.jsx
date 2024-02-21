@@ -6,8 +6,9 @@ import { useMutation, useQuery } from "react-query";
 import { Link, useLocation, useParams } from "react-router-dom";
 import StatusParticipant from "../Participants/StatusParticipant";
 import { IoMdSearch } from "react-icons/io";
-import FilterBoxBatch from "@/components/Feature/FilterBoxBatch";
 import FilterBoxStatus from "@/components/Feature/FilterBoxStatus";
+import { CSVLink } from "react-csv";
+import ExportFile from "./Modal/ExportFile";
 
 export default function DetailBatch() {
   const { id } = useParams();
@@ -81,28 +82,45 @@ export default function DetailBatch() {
   console.log("status", selectedStatus);
   console.log("filter", filteredParticipants);
 
+  
   return (
     <div>
       <div className="container mx-auto px-4 bg-[#F5F5FC] h-screen items-end rounded-lg">
-        <div className="flex flex-col ml-10">
+        <div className="flex flex-col ">
           <p className="mt-10 font-bold text-4xl text-black">{kategoriBatch}</p>
           <p className="font-medium text-xl text-black">{deskripsiBatch}</p>
         </div>
+
         <div className="flex justify-between items-center">
-          <div className="flex mt-10 z-50">
-            <FilterBoxStatus onSelectStatus={handleStatusChange} />
+          <div className="flex mt-10">
+            
+              <button
+                className="rounded-lg bg-[#06476F] text-white text-l font-semibold h-9 w-32 items-right p-1 text-center "
+                onClick={() =>
+                  document.getElementById("export_data_modal").showModal()
+                }
+              >
+                Export Data
+              </button>
+           
           </div>
-          <div className="flex items-center ps-4 gap-2 max-w-[200px] mt-10 rounded-2xl bg-white border border-[#06476F] hover:border-blue-500 focus:border-[#06476F]">
-            <IoMdSearch fontSize="1.125rem" />
-            <input
-              type="text"
-              className="flex h-10 pe-4 pb-1 w-full rounded-2xl outline-none"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="flex gap-2">
+            <div className="flex mt-10 z-50">
+              <FilterBoxStatus onSelectStatus={handleStatusChange} />
+            </div>
+            <div className="flex items-center ps-4 gap-2 max-w-[200px] mt-10 rounded-lg bg-white border border-[#06476F] hover:border-blue-500 focus:border-[#06476F]">
+              <IoMdSearch fontSize="1.125rem" />
+              <input
+                type="text"
+                className="flex h-10 pe-4 pb-1 w-full rounded-lg outline-none"
+                placeholder="Search..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
         </div>
+
         <div className="mt-6 overflow-x-auto">
           <table className="table bg-white">
             <thead className="">
@@ -188,6 +206,7 @@ export default function DetailBatch() {
           </table>
         </div>
       </div>
+      <ExportFile kategoriBatch={kategoriBatch} deskripsiBatch={deskripsiBatch}/>
     </div>
   );
 }

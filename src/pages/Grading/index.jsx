@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "react-query";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { getBatchParticipant } from "@/api/Batch";
 import { useEffect, useState } from "react";
 import { IoIosRemove } from "react-icons/io";
@@ -9,13 +9,14 @@ import {
   gradingParticipantFn,
 } from "@/api/Participant";
 import Swal from "sweetalert2";
-import { undefined } from "zod";
+import { IoReorderFourOutline } from "react-icons/io5";
 
 export default function Grading() {
   const { id } = useParams();
   const location = useLocation();
   const { namaPeserta, kategoriBatch, materiBatch, batch_id } = location.state;
   const participantId = atob(id);
+  const navigate = useNavigate();
 
   const {
     data: dataSingleParticipant,
@@ -97,6 +98,7 @@ export default function Grading() {
         title: "Grading Participant!",
         text: "The account has been successfully grade.",
       });
+      navigate(-1);
     },
     onError: async (error) => {
       console.log(error);
@@ -133,6 +135,20 @@ export default function Grading() {
     handleUpdateGrading.mutateAsync(gradingData);
   };
 
+  const dragStart = (e, index) => {
+    e.dataTransfer.setData("draggedItemIndex", index);
+  };
+
+  const drop = (e, index) => {
+    e.preventDefault();
+    const draggedItemIndex = e.dataTransfer.getData("draggedItemIndex");
+    const items = [...inputFields];
+    const draggedItem = items[draggedItemIndex];
+    items.splice(draggedItemIndex, 1);
+    items.splice(index, 0, draggedItem);
+    setInputFields(items);
+  };
+
   return (
     <div>
       <div className="container mx-auto px-4 py-4 bg-[#F5F5FC] h-full items-end rounded-lg">
@@ -159,61 +175,77 @@ export default function Grading() {
                 className="flex flex-col gap-5"
               >
                 {inputFields.map((inputFields, index) => (
-                  <div key={index} className="flex items-center gap-4">
-                    <input
-                      type="text"
-                      name="nama_kategori"
-                      placeholder="Aspect"
-                      required
-                      value={inputFields.nama_kategori || ""}
-                      onChange={(event) => handleChangeInput(index, event)}
-                      className="input input-bordered w-full max-w-xs rounded-lg"
-                    />
-                    <select
-                      value={inputFields.nilai || ""}
-                      name="nilai"
-                      onChange={(event) => handleChangeInput(index, event)}
-                      className="select select-bordered w-full max-w-xs flex justify-end ml-2 rounded-lg"
+                  <div className="flex gap-5">
+                    <button
+                      key={index}
+                      draggable
+                      onDragStart={(e) => dragStart(e, index)}
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => drop(e, index)}
                     >
-                      <option disabled selected>
-                        Select 1-10
-                      </option>
-                      {[...Array(11)].map((_, index) => (
-                        <option key={index + 1}>{index}</option>
-                      ))}
-                    </select>
-                    <div>
-                      {index === 0 && (
-                        <div className="flex">
-                          <button
-                            type="button"
-                            onClick={() => handleAddFields()}
-                          >
-                            <IoMdAdd className="mr-2 items-start" size={24} />
-                          </button>
-                          <div className="w-6"></div>
-                        </div>
-                      )}
-                      {index !== 0 && (
-                        <div className="flex">
-                          <button
-                            type="button"
-                            disabled={index === 0}
-                            onClick={() => handleRemoveFields(index)}
-                          >
-                            <IoIosRemove
-                              className="mr-2 items-start"
-                              size={24}
-                            />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleAddFields()}
-                          >
-                            <IoMdAdd className="items-start" size={24} />
-                          </button>
-                        </div>
-                      )}
+                      <IoReorderFourOutline />
+                    </button>
+                    <div
+                      onDragOver={(e) => e.preventDefault()}
+                      onDrop={(e) => drop(e, index)}
+                      className="flex items-center gap-4"
+                    >
+                      <div>{index + 1}</div>
+                      <input
+                        type="text"
+                        name="nama_kategori"
+                        placeholder="Aspect"
+                        required
+                        value={inputFields.nama_kategori || ""}
+                        onChange={(event) => handleChangeInput(index, event)}
+                        className="input input-bordered w-full max-w-xs rounded-lg"
+                      />
+                      <select
+                        value={inputFields.nilai || ""}
+                        name="nilai"
+                        onChange={(event) => handleChangeInput(index, event)}
+                        className="select select-bordered w-full max-w-xs flex justify-end ml-2 rounded-lg"
+                      >
+                        <option disabled selected>
+                          Select 1-10
+                        </option>
+                        {[...Array(11)].map((_, index) => (
+                          <option key={index + 1}>{index}</option>
+                        ))}
+                      </select>
+                      <div>
+                        {index === 0 && (
+                          <div className="flex">
+                            <button
+                              type="button"
+                              onClick={() => handleAddFields()}
+                            >
+                              <IoMdAdd className="mr-2 items-start" size={24} />
+                            </button>
+                            <div className="w-6"></div>
+                          </div>
+                        )}
+                        {index !== 0 && (
+                          <div className="flex">
+                            <button
+                              type="button"
+                              disabled={index === 0}
+                              onClick={() => handleRemoveFields(index)}
+                            >
+                              <IoIosRemove
+                                className="mr-2 items-start"
+                                size={24}
+                              />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleAddFields()}
+                            >
+                              <IoMdAdd className="items-start" size={24} />
+                            </button>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

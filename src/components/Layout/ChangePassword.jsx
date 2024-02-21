@@ -11,6 +11,9 @@ import Swal from "sweetalert2";
 export default function ChangePassword({ pengajarId, refetchPengajar }) {
   console.log("id user", pengajarId);
 
+  const [showCurPassword, setShowCurPassword] = useState();
+  const toggleCurPassword = () => setShowCurPassword((prev) => !prev);
+
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
 
@@ -25,6 +28,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
     getValues,
   } = useForm({
     defaultValues: {
+      currentPassword: "",
       newPassword: "",
       confPassword: "",
     },
@@ -84,6 +88,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
     const pengajarData = new FormData();
     console.log("data", pengajarData);
 
+    pengajarData.append("currentPassword", data.currentPassword);
     pengajarData.append("newPassword", data.newPassword);
     pengajarData.append("confPassword", data.confPassword);
 
@@ -109,10 +114,52 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
               onSubmit={submitChangePassword(updatePassword)}
               className="flex flex-col gap-2 mt-2"
             >
+              <div className="w-full max-w-xs ">
+                <div className="form-control w-full max-w-xs relative flex">
+                  <label className="label">
+                    <span className="label-text">Current Password</span>
+                  </label>
+                  <div>
+                    <input
+                      type={showCurPassword ? "text" : "password"}
+                      placeholder="Type here"
+                      className="input input-bordered w-full max-w-xs rounded-lg pr-10"
+                      {...register("currentPassword", {
+                        required: "Current Password must be provided!",
+                        minLength: {
+                          value: 8,
+                          message:
+                            "Current Password must contain min 8 characters!",
+                        },
+                      })}
+                    />
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        toggleCurPassword();
+                      }}
+                      className="focus:ring-primary-500 absolute top-1/2 -translate-y-1/2 right-3 flex items-center rounded-lg p-1 focus:outline-none focus:ring mt-5"
+                    >
+                      {showCurPassword ? (
+                        <HiEyeOff className="cursor-pointer text-xl text-gray-500 hover:text-gray-600" />
+                      ) : (
+                        <HiEye className="cursor-pointer text-xl text-gray-500 hover:text-gray-600" />
+                      )}
+                    </button>
+                  </div>
+                </div>
+                {errors.currentPassword && (
+                  <p className="text-sm mt-3 text-red-600">
+                    {errors.currentPassword.message}
+                  </p>
+                )}
+              </div>
+
               <div>
                 <div className="form-control w-full max-w-xs relative">
                   <label className="label">
-                    <span className="label-text">Password</span>
+                    <span className="label-text">New Password</span>
                   </label>
                   <div>
                     <input
@@ -124,7 +171,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
                         minLength: {
                           value: 8,
                           message:
-                            "Confirm Password must contain min 8 characters!",
+                            "New Password must contain min 8 characters!",
                         },
                       })}
                     />
@@ -154,7 +201,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
               <div>
                 <div className="form-control w-full max-w-xs relative">
                   <label className="label">
-                    <span className="label-text">Confirm Password</span>
+                    <span className="label-text">Confirm New Password</span>
                   </label>
                   <input
                     type={showConfPassword ? "text" : "password"}
@@ -199,8 +246,11 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
                 )}
               </div>
 
-              <button type="submit" className="btn btn-l bg-[#06476F] mt-5 rounded-lg text-white items-center w-36">
-                Reset Password
+              <button
+                type="submit"
+                className="btn btn-l bg-[#06476F] mt-5 rounded-lg text-white items-center w-42"
+              >
+                Change Password
               </button>
             </form>
           </FormProvider>

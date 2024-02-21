@@ -379,6 +379,7 @@ export default function Dashboard() {
                     to={`/batch/${btoa(batch.batch_id)}`}
                     state={{
                       kategoriBatch: batch.kategori_batch,
+                      deskripsiBatch: batch.deskripsi_batch,
                     }}
                   >
                     <div className="card-actions justify-end">

@@ -45,3 +45,8 @@ export const addBatchParticipantsFn = async (id, data) => {
 	const response = await Api.post(`batches/addParticipantsOnBatch/${id}`, data)
 	return response.data
 }
+
+export const exportExcelFn = async (id) => {
+	const response = await Api.get(`batches/exportParticipantsByBatch/${id}`)
+	return response.data
+}

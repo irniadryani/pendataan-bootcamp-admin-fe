@@ -5,13 +5,15 @@ import { useQuery } from "react-query";
 export default function FilterBoxBatch({ onSelectBatch }) {
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState("");
+  const [selectedBatch, setSelectedBatch] = useState(null);
 
   const { data: dataBatch } = useQuery("allBatch", allBatchFn);
 
   const clearSearch = () => {
     setSearch("");
     setShow(false);
-    onSelectBatch(null)
+    onSelectBatch(null);
+    setSelectedBatch(null);
   };
 
   const node = useRef();
@@ -36,44 +38,46 @@ export default function FilterBoxBatch({ onSelectBatch }) {
 
   const handleSelect = (option) => {
     setShow(false);
+    setSelectedBatch(option);
     onSelectBatch(option);
   };
 
   return (
     <div className="relative inline-block text-left" ref={node}>
       <div className="flex justify-between gap-2">
-        <input
-          type="text"
-          placeholder="Type Batch"
-          className="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 outline-none"
-          id="options-menu"
-          aria-haspopup="true"
-          aria-expanded="true"
-          onChange={(e) => setSearch(e.target.value)}
-          onClick={() => setShow(true)}
-          value={search}
-        />
-
-        {show && (
-          <button
-            onClick={clearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 focus:outline-none hover:text-gray-700"
-          >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+        <div className="relative w-full">
+          <input
+            type="text"
+            placeholder="Search Batch"
+            className="w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 outline-none"
+            id="options-menu"
+            aria-haspopup="true"
+            aria-expanded="true"
+            onChange={(e) => setSearch(e.target.value)}
+            value={search}
+            onClick={() => setShow(true)}
+          />
+          {search && (
+            <button
+              onClick={clearSearch}
+              className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 focus:outline-none hover:text-gray-700"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        )}
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {show && (
@@ -84,26 +88,23 @@ export default function FilterBoxBatch({ onSelectBatch }) {
             aria-orientation="vertical"
             aria-labelledby="options-menu"
           >
-            {show &&
-              dataBatch
-                .filter((batch) =>
-                  batch.kategori_batch
-                    .toLowerCase()
-                    .includes(search.toLowerCase())
-                )
-                .map((batch, index) => (
-                  <p
-                    key={index}
-                    onClick={() => {
-                      setSearch(batch.kategori_batch);
-                      handleSelect(batch.batch_id);
-                    }}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
-                    role="menuitem"
-                  >
-                    {batch.kategori_batch}
-                  </p>
-                ))}
+            {dataBatch
+              .filter((batch) =>
+                batch.kategori_batch.toLowerCase().includes(search.toLowerCase())
+              )
+              .map((batch, index) => (
+                <p
+                  key={index}
+                  onClick={() => {
+                    setSearch(batch.kategori_batch);
+                    handleSelect(batch.batch_id);
+                  }}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  role="menuitem"
+                >
+                  {batch.kategori_batch}
+                </p>
+              ))}
           </div>
         </div>
       )}

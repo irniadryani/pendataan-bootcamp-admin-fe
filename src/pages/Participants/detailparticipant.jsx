@@ -53,16 +53,54 @@ export default function DetailParticipant() {
                 <p className="text-[#06476F] mx-3 font-bold text-xl justify-start">
                   Email
                 </p>
-                <p className="text-black mx-3 font-medium text-sm mt-1 mb-2">
-                  {dataSingleParticipant.email || "-"}
-                </p>
+
+                <div className="flex items-center">
+                  <a
+                    href={dataSingleParticipant.email || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
+                  >
+                    {dataSingleParticipant.email || "-"}
+                  </a>
+                  <div onMouseOut={() => setCopied(false)}>
+                    <CopyToClipboard
+                      text={dataSingleParticipant.email || "-"}
+                      onCopy={() => {
+                        setCopied(true);
+                      }}
+                    >
+                      <button
+                        className="tooltip tooltip-secondary"
+                        data-tip={
+                          copied ? "Copied to Clipboard!" : "Copy to Clipboard"
+                        }
+                      >
+                        <FaCopy className="flex my-auto" color="#06476F" />
+                      </button>
+                    </CopyToClipboard>
+                  </div>
+                  <Tooltip />
+                </div>
 
                 <p className="text-[#06476F] mx-3 font-bold text-xl justify-start">
                   Phone Number
                 </p>
-                <p className="text-black mx-3 font-medium text-sm mt-1 mb-2">
-                  {dataSingleParticipant.nomor_handphone || "-"}
-                </p>
+                {!dataSingleParticipant.nomor_handphone && (
+                  <p className="text-black mx-3 font-medium text-sm mt-1 mb-2">
+                    -
+                  </p>
+                )}
+                {dataSingleParticipant.nomor_handphone && (
+                  <Link
+                    target="_blank"
+                    to={`https://wa.me/${dataSingleParticipant.nomor_handphone}`}
+                  >
+                    <p className="text-blue-500 underline mx-3 font-medium text-sm mt-1 mb-2">
+                      {dataSingleParticipant.nomor_handphone}
+                    </p>
+                  </Link>
+                )}
 
                 <p className="text-[#06476F] mx-3 font-bold text-xl justify-start">
                   Address
@@ -77,6 +115,8 @@ export default function DetailParticipant() {
                 <div className="flex items-center">
                   <a
                     href={dataSingleParticipant.link_github || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
                   >
                     {dataSingleParticipant.link_github || "-"}
@@ -107,6 +147,8 @@ export default function DetailParticipant() {
                 <div className="flex items-center">
                   <a
                     href={dataSingleParticipant.cv || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
                   >
                     {dataSingleParticipant.cv || "-"}
@@ -119,7 +161,7 @@ export default function DetailParticipant() {
                       }}
                     >
                       <button
-                        className="tooltip tooltip-secondary"
+                        className="tooltip tooltip-secondary "
                         data-tip={
                           copied ? "Copied to Clipboard!" : "Copy to Clipboard"
                         }
@@ -131,6 +173,37 @@ export default function DetailParticipant() {
                   <Tooltip />
                 </div>
 
+                <p className="text-[#06476F] mx-3 font-bold text-xl justify-start">
+                  Certificate
+                </p>
+                <div className="flex items-center mb-10">
+                  <a
+                    href={dataSingleParticipant?.Certificate?.url || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
+                  >
+                    {dataSingleParticipant?.Certificate?.url || "-"}
+                  </a>
+                  <div onMouseOut={() => setCopied(false)}>
+                    <CopyToClipboard
+                      text={dataSingleParticipant?.Certificate?.url || "-"}
+                      onCopy={() => {
+                        setCopied(true);
+                      }}
+                    >
+                      <button
+                        className="tooltip tooltip-secondary "
+                        data-tip={
+                          copied ? "Copied to Clipboard!" : "Copy to Clipboard"
+                        }
+                      >
+                        <FaCopy className="flex my-auto" color="#06476F" />
+                      </button>
+                    </CopyToClipboard>
+                  </div>
+                  <Tooltip />
+                </div>
               </div>
             </div>
           </div>

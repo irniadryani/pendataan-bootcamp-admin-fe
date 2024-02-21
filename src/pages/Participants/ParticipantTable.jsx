@@ -16,7 +16,6 @@ export default function ParticipantTable({
   refetch,
   currentPaginationTable,
 }) {
-  const [participantIdToDelete, setParticipantIdToDelete] = useState(null);
   const [currentPage, setCurrentPage] = useState(currentPaginationTable);
 
   const { refetch: refetchParticipants, isLoading: loadingParticipants } =
@@ -42,7 +41,7 @@ export default function ParticipantTable({
     },
   });
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async (idPeserta) => {
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
@@ -55,7 +54,7 @@ export default function ParticipantTable({
       });
 
       if (result.isConfirmed) {
-        await handleDeleteParticipants.mutateAsync(participantIdToDelete);
+        await handleDeleteParticipants.mutateAsync(idPeserta);
         Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",
@@ -63,9 +62,6 @@ export default function ParticipantTable({
         });
       }
 
-      if (result.isDismissed || result.isDenied) {
-        setParticipantIdToDelete(null);
-      }
     } catch (error) {
       console.error(error);
       toast.error("Failed to delete participant", {
@@ -175,14 +171,15 @@ export default function ParticipantTable({
                             <VscEdit fontSize="1.125rem" />
                           </div>
                         </Link>
-                        <div
+                        <button
+                          type="button"
                           onClick={() => {
-                            setParticipantIdToDelete(participant.id);
+                            handleConfirmDelete(participant.id);
                           }}
                           className="bg-[#06476F] text-white rounded-full p-2  "
                         >
                           <VscTrash fontSize="1.125rem" />
-                        </div>
+                        </button>
                       </div>
                     </th>
                   </tr>

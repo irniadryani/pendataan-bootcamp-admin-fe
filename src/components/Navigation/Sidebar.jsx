@@ -9,6 +9,8 @@ import { HiOutlineUserGroup } from "react-icons/hi";
 import { VscAccount } from "react-icons/vsc";
 import { BiSolidUserDetail } from "react-icons/bi";
 import { IoMdSettings } from "react-icons/io";
+import { settingFn } from "@/api/Setting";
+import { useQuery } from "react-query";
 
 const navigation = [
   { name: "Home", href: "/", icon: <GoHome />, current: false },
@@ -52,11 +54,18 @@ export default function Sidebar({ children }) {
 
   console.log(location.pathname);
 
+  const {
+    data: dataSetting,
+    refetch: refetchSetting,
+    isLoading: loadingSetting,
+    isRefetching: refetchingSetting,
+  } = useQuery("setting", settingFn);
+
+
   return (
     <div className="drawer !h-dvh lg:drawer-open bg-white">
       <input id="my-drawer-2" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content overflow-y-auto flex flex-col overflow-x-hidden">
-
         {children}
       </div>
       <div className="drawer-side !h-dvh z-50">
@@ -67,7 +76,13 @@ export default function Sidebar({ children }) {
         ></label>
         <div className="flex flex-col p-4 w-full sm:w-80 h-[100%] bg-base-200 text-base-content">
           <div className="h-[10%] mb-2 mt-4 px-4 flex items-center justify-between lg:justify-center">
-            <img src={WgsLogo} className="w-20" alt="" />
+            <img
+              src={`${import.meta.env?.VITE_IMAGE_HOST?.replace(/\/$/, "")}/${
+                dataSetting?.contents?.image_logo_admin
+              }`}
+              alt="Shoes"
+              className="w-20"
+            />
             <label
               htmlFor="my-drawer-2"
               aria-label="open sidebar"

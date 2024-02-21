@@ -12,6 +12,7 @@ import {
 } from "@/api/Participant";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
+import { settingFn } from "@/api/Setting";
 
 export default function EditParticipant() {
   const { id } = useParams();
@@ -37,6 +38,7 @@ export default function EditParticipant() {
       link_github: "",
       cv: "",
       image: "",
+      linkCertificate: "",
     },
   });
 
@@ -51,13 +53,6 @@ export default function EditParticipant() {
       toast.onmouseleave = Swal.resumeTimer;
     },
   });
-
-  // const {
-  //   data: dataIdCurrentUser,
-  //   refetch: refetchCurrentUserData,
-  //   isLoading,
-  //   isError,
-  // } = useQuery(["currentUserData", id], () => currenUserDataFn(id));
 
   const {
     data: dataSingleParticipant,
@@ -76,11 +71,13 @@ export default function EditParticipant() {
         alamat_rumah: dataSingleParticipant.alamat_rumah || "",
         link_github: dataSingleParticipant.link_github || "",
         cv: dataSingleParticipant.cv || "",
+        linkCertificate: dataSingleParticipant.Certificate?.url || "",
       });
-
+  
       setValue("image", dataSingleParticipant.image);
     }
   }, [loadingSingleParticipant, dataSingleParticipant, resetEditParticipant]);
+  
 
   const handleUpdateParticipant = useMutation({
     mutationFn: (data) => updateParticipantFn(id, data),
@@ -136,6 +133,9 @@ export default function EditParticipant() {
     if (data.cv !== null) {
       batchData.append("cv", data.cv);
     }
+    if (data.linkCertificate !== null) {
+      batchData.append("linkCertificate", data.linkCertificate);
+    }
 
     if (selectedFile) {
       batchData.append("image", selectedFile);
@@ -152,15 +152,20 @@ export default function EditParticipant() {
 
   const handleDelete = async () => {
     try {
-      // Ganti 'deleteParticipantFn' dengan fungsi yang sesuai untuk menghapus peserta
       await deleteImageParticipantsFn(id);
-      // Setelah peserta berhasil dihapus, Anda dapat memperbarui data atau mengarahkan pengguna ke halaman lain
+
       refetchSingleParticipant();
     } catch (error) {
       console.error(error);
-      // Tampilkan pesan kesalahan jika ada
     }
   };
+
+  const {
+    data: dataSetting,
+    refetch: refetchSetting,
+    isLoading: loadingSetting,
+    isRefetching: refetchingSetting,
+  } = useQuery("setting", settingFn);
 
   return (
     <div>
@@ -178,7 +183,7 @@ export default function EditParticipant() {
                 <div className="relative">
                   <label htmlFor="image"></label>
                   <img
-                    className="h-full w-80 object-cover object-center rounded-xl"
+                    className="h-full w-100 object-cover object-center rounded-xl"
                     src={
                       selectedFile
                         ? URL.createObjectURL(selectedFile)
@@ -282,13 +287,13 @@ export default function EditParticipant() {
                     </label>
                     <input
                       type="text"
-                      placeholder="Type here"
+                      placeholder="Type Here"
                       className="input input-bordered input-[#06476F] w-full rounded-xl bordered"
                       {...register("link_github")}
                     />
                   </div>
 
-                  <div className="flex items-center gap-5">
+                  <div className="flex items-start gap-5">
                     <label
                       htmlFor="cv"
                       className="text-[#06476F] mx-2 font-medium text-lg max-w-[150px] w-full"
@@ -302,6 +307,49 @@ export default function EditParticipant() {
                       {...register("cv")}
                     />
                   </div>
+
+                  {dataSetting && dataSetting.contents && (
+                    <div className="flex flex-col justify-center w-80 ml-44">
+                      <p className="text-[#06476F] mx-3 font-bold text-xs">
+                        Cv Link Folder
+                      </p>
+                      <a
+                        href={dataSetting.contents.link_drive_cv || "#"}
+                        className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
+                      >
+                        {dataSetting.contents.link_drive_cv || "-"}
+                      </a>
+                    </div>
+                  )}
+
+                  <div className="flex items-start gap-5">
+                    <label
+                      htmlFor="linkCertificate"
+                      className="text-[#06476F] mx-2 font-medium text-lg max-w-[150px] w-full"
+                    >
+                      Certificate
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Type here"
+                      className="input input-bordered input-[#06476F] w-full rounded-xl bordered"
+                      {...register("linkCertificate")}
+                    />
+                  </div>
+
+                  {dataSetting && dataSetting.contents && (
+                    <div className="flex flex-col justify-center w-80 ml-44">
+                      <p className="text-[#06476F] mx-3 font-bold text-xs">
+                        Certificate Link Folder
+                      </p>
+                      <a
+                        href={dataSetting.contents.link_drive_certi || "#"}
+                        className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
+                      >
+                        {dataSetting.contents.link_drive_certi || "-"}
+                      </a>
+                    </div>
+                  )}
                 </div>
               </div>
 
