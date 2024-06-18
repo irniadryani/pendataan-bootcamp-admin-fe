@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 import Swal from "sweetalert2";
 
 export default function AddBatch({ refetch }) {
+  // State to manage modal open/close
   const [isFormClosed, setIsFormClosed] = useState(false);
 
+  // useForm hook for handling form state and validation
   const {
     register,
     handleSubmit: submitAddBatch,
@@ -15,6 +17,7 @@ export default function AddBatch({ refetch }) {
     reset: resetAddBatch,
   } = useForm();
   
+   // useMutation hook for handling batch submission
   const handleBatchResponse = useMutation({
     mutationFn: (data) => submitBatchFn(data),
 
@@ -36,6 +39,7 @@ export default function AddBatch({ refetch }) {
     },
   });
 
+   // Function to handle batch data submission
   const addBatch = (data) => {
     const batchData = new FormData();
     console.log("data", batchData);
@@ -51,6 +55,7 @@ export default function AddBatch({ refetch }) {
     handleBatchResponse.mutateAsync(batchData);
   };
 
+   // Function to handle form modal closure
   const handleCloseForm = () => {
     setIsFormClosed(false);
   };

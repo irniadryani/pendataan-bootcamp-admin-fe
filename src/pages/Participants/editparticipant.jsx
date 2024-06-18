@@ -1,5 +1,5 @@
 import Profile from "@/assets/profile.jpg";
-import { Link, useLocation, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { IoCamera } from "react-icons/io5";
 import { useMutation, useQuery } from "react-query";
 import { FormProvider, useForm } from "react-hook-form";
@@ -9,20 +9,21 @@ import {
   deleteParticipantsFn,
   detailSingleParticipantsFn,
   updateParticipantFn,
+  resetPasswordFn,
 } from "@/api/Participant";
 import { MdDelete } from "react-icons/md";
 import Swal from "sweetalert2";
-import { settingFn } from "@/api/Setting";
+import { settingFn, updateDefaultPasswordFn } from "@/api/Setting";
 
 export default function EditParticipant() {
-  const { id } = useParams();
-
-  const location = useLocation();
-
-  const { currentPaginationTable } = location.state;
-
-  console.log("single id", id);
-  console.log("curent pagination", currentPaginationTable);
+  const { id } = useParams();  // Getting participant ID from URL parameters
+  const navigate = useNavigate(); // Navigation hook from react-router-dom
+  //State variables
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const location = useLocation(); // Getting current location from react-router-dom
+  const { currentPaginationTable } = location.state; // Extracting current pagination table from location state
 
   const {
     register,
@@ -42,6 +43,7 @@ export default function EditParticipant() {
     },
   });
 
+  // Toast configuration using Swal
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -54,14 +56,14 @@ export default function EditParticipant() {
     },
   });
 
+  // Fetching single participant data on component mount
   const {
     data: dataSingleParticipant,
     refetch: refetchSingleParticipant,
     isLoading: loadingSingleParticipant,
   } = useQuery(["participant", id], () => detailSingleParticipantsFn(id));
 
-  console.log("single participant", dataSingleParticipant);
-
+  // Setting form values after data is fetched
   useEffect(() => {
     if (!loadingSingleParticipant && dataSingleParticipant) {
       resetEditParticipant({
@@ -73,18 +75,20 @@ export default function EditParticipant() {
         cv: dataSingleParticipant.cv || "",
         linkCertificate: dataSingleParticipant.Certificate?.url || "",
       });
-  
+
       setValue("image", dataSingleParticipant.image);
     }
   }, [loadingSingleParticipant, dataSingleParticipant, resetEditParticipant]);
-  
 
+   // Mutation hook for updating participant data
   const handleUpdateParticipant = useMutation({
     mutationFn: (data) => updateParticipantFn(id, data),
-
-    onMutate() {},
+    onMutate() {
+      setIsLoading(true);
+      setError(null);
+    },
     onSuccess: (res) => {
-      console.log(res);
+      setIsLoading(false);
       refetchSingleParticipant();
       resetEditParticipant();
       Swal.fire({
@@ -92,9 +96,15 @@ export default function EditParticipant() {
         title: "Account Edited!",
         text: "The account has been successfully edited.",
       });
+      navigate("/participants", {
+        state: {
+          currentPaginationTable: currentPaginationTable,
+        },
+      });
     },
     onError: (error) => {
-      console.log(error);
+      setIsLoading(false);
+      setError(error);
       let errorMessage;
 
       if (error.response && error.response.data.msg) {
@@ -111,6 +121,7 @@ export default function EditParticipant() {
     },
   });
 
+  // Function to handle form submission
   const updateParticipant = (data) => {
     const batchData = new FormData();
     console.log("data", batchData);
@@ -144,12 +155,12 @@ export default function EditParticipant() {
     handleUpdateParticipant.mutateAsync(batchData);
   };
 
-  const [selectedFile, setSelectedFile] = useState(null);
-
+  // Function to handle file change
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
+  // Function to handle deletion of participant's image
   const handleDelete = async () => {
     try {
       await deleteImageParticipantsFn(id);
@@ -160,12 +171,61 @@ export default function EditParticipant() {
     }
   };
 
+  // Query hook for fetching setting data
   const {
     data: dataSetting,
     refetch: refetchSetting,
     isLoading: loadingSetting,
     isRefetching: refetchingSetting,
   } = useQuery("setting", settingFn);
+
+  // Mutation hook for resetting participant's password
+  const handleResetPasswordFn = useMutation({
+    mutationFn: () => resetPasswordFn(id),
+    onMutate: async () => {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, reset it!",
+      });
+
+      if (!result.isConfirmed) {
+        throw new Error("Reset password action cancelled");
+      }
+
+      setIsLoading(true);
+      setError(null);
+    },
+    onSuccess: () => {
+      setIsLoading(false);
+      Swal.fire({
+        icon: "success",
+        title: "Password Reset!",
+        text: "The password has been reset to default.",
+      });
+    },
+    onError: (error) => {
+      setIsLoading(false);
+      setError(error);
+      let errorMessage;
+
+      if (error.response && error.response.data.msg) {
+        errorMessage = error.response.data.msg;
+      } else {
+        errorMessage = error.response.data.error;
+      }
+
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: errorMessage,
+      });
+    },
+  });
 
   return (
     <div>
@@ -314,6 +374,7 @@ export default function EditParticipant() {
                         Cv Link Folder
                       </p>
                       <a
+                        target="_blank"
                         href={dataSetting.contents.link_drive_cv || "#"}
                         className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
                       >
@@ -344,12 +405,29 @@ export default function EditParticipant() {
                       </p>
                       <a
                         href={dataSetting.contents.link_drive_certi || "#"}
+                        target="_blank"
                         className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
                       >
                         {dataSetting.contents.link_drive_certi || "-"}
                       </a>
                     </div>
                   )}
+
+                  <div className="flex flex-row mx-2">
+                    <label className="text-[#06476F] mx-2 font-medium text-lg max-w-[150px] w-full">
+                      Reset Password
+                    </label>
+
+                    <div className="flex w-full w-max-[125px]">
+                    <button
+                      type="button"
+                      onClick={() => handleResetPasswordFn.mutateAsync()}
+                      className="btn btn-ghost btn-xl bg-[#06476F] text-white rounded-sm mx-2 w-full"
+                    >
+                      Reset
+                    </button>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -358,6 +436,7 @@ export default function EditParticipant() {
                   <button
                     type="submit"
                     className="btn btn-ghost btn-xl bg-[#06476F] text-white rounded-sm"
+                    disabled={isLoading || error}
                   >
                     Submit
                   </button>

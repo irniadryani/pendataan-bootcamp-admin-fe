@@ -18,16 +18,16 @@ export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
+   // State untuk menampilkan atau menyembunyikan password
   const [showPassword, setShowPassword] = useState(false);
   const togglePassword = () => setShowPassword((prev) => !prev);
 
+  // Mendapatkan lokasi sebelumnya untuk navigasi setelah login
   const from = location.state?.prevLocation || "/";
 
   const store = useStore();
 
-  //useMutation digunakan untuk melakukan operasi mutasi atau perubahan pada data, seperti membuat, memperbarui,
-  //atau menghapus data di server (misalnya, melalui API)
-
+  // Function untuk validasi login pengguna
   const {
     register,
     handleSubmit,
@@ -51,21 +51,13 @@ export default function Login() {
       navigate(from);
     },
     onError: (error) => {
-      store.setRequestLoading(false);
-      if (Array.isArray(error.response?.data?.mesage)) {
-        error.forEach((el) =>
-          toast.error(el.message, {
-            position: "top-right",
-          })
-        );
-      } else {
-        toast.error(error.response?.data?.message, {
-          position: "top-right",
-        });
-      }
+      toast.error("Email or Password is not valid", {
+        position: "top-right",
+      });
     },
   });
 
+  //jika berhasil maka akan diarahkan ke halaman login
   useEffect(() => {
     if (store.userToken) {
       navigate(from);
@@ -92,9 +84,10 @@ export default function Login() {
             </p>
           </div>
 
+          {/* form yang harus diisi user untuk login */}
           <div className="mt-8">
             <div className="mt-6">
-              <FormProvider {...useForm}>
+              <FormProvider {...useForm}> 
                 <form
                   className="space-y-6"
                   onSubmit={handleSubmit(onSubmitHandler)}
@@ -151,12 +144,8 @@ export default function Login() {
           </div>
         </div>
       </div>
+      {/* tampilan carousel di halaman login */}
       <div className="relative h-full hidden w-0 flex-1 lg:block">
-        {/* <img
-					className='absolute inset-0 h-full w-full object-center'
-					src={LoginBG}
-					alt=''
-				/> */}
         <div className="!h-dvh carousel rounded-s-3xl">
           <div id="item1" className="carousel-item w-full">
             <img

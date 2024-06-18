@@ -45,3 +45,8 @@ export const gradingParticipantFn = async (id, data) => {
 	const response = await Api.put(`pesertas/${id}/grading`, data, formDataconfig)
 	return response.data
 }
+
+export const resetPasswordFn = async (id) => {
+	const response = await Api.put(`pesertas/${id}/resetPassword`, formDataconfig)
+	return response.data
+}

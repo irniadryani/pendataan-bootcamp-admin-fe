@@ -12,11 +12,13 @@ export default function CreateAccount() {
     reset: resetCreateAccount,
   } = useForm();
 
+  // Query to fetch all participants
   const { refetch: refetchParticipants } = useQuery(
     "allParticipants",
     allParticipantsFn
   );
 
+  // Toast configuration using SweetAlert2
   const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -29,6 +31,7 @@ export default function CreateAccount() {
     }
   });
 
+  // Mutation for handling account submission
   const handleAccountResponse = useMutation({
     mutationFn: (data) => submitAccountFn(data),
   
@@ -62,6 +65,7 @@ export default function CreateAccount() {
     },
   });
   
+  // Function to handle account creation
   const createAccount = (data) => {
     const accountData = new FormData();
     console.log("data", accountData);

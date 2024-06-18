@@ -1,45 +1,42 @@
-import { allBatchFn } from "@/api/Batch";
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
+import { allBatchFn } from "@/api/Batch";
 
 export default function FilterBoxBatch({ onSelectBatch }) {
-  const [show, setShow] = useState(false);
-  const [search, setSearch] = useState("");
-  const [selectedBatch, setSelectedBatch] = useState(null);
+  //State Variables
+  const [show, setShow] = useState(false); 
+  const [search, setSearch] = useState(""); 
+  const [selectedBatch, setSelectedBatch] = useState(null); 
 
-  const { data: dataBatch } = useQuery("allBatch", allBatchFn);
+  const { data: dataBatch } = useQuery("allBatch", allBatchFn); // Fetching all batches using react-query
 
   const clearSearch = () => {
-    setSearch("");
-    setShow(false);
-    onSelectBatch(null);
-    setSelectedBatch(null);
+    setSearch(""); // Clearing the search input
+    setShow(false); // Closing the dropdown
+    onSelectBatch(null); // Calling onSelectBatch function with null to clear selection
+    setSelectedBatch(null); // Clearing the selected batch
   };
 
-  const node = useRef();
+  const node = useRef(); // Ref to handle click outside component
 
   const handleClickOutside = (e) => {
     if (node.current.contains(e.target)) {
-      // inside click
-      return;
+      return; // Checking if click is inside the component
     }
-    // outside click
-    setShow(false);
+    setShow(false); // Closing dropdown if click is outside the component
   };
 
   useEffect(() => {
-    // add when mounted
-    document.addEventListener("mousedown", handleClickOutside);
-    // return function to be called when unmounted
+    document.addEventListener("mousedown", handleClickOutside); // Adding event listener to handle click outside component
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside); // Cleaning up event listener on unmount
     };
-  }, []);
+  }, []); // Running this effect only once when component mounts
 
   const handleSelect = (option) => {
-    setShow(false);
-    setSelectedBatch(option);
-    onSelectBatch(option);
+    setShow(false); // Closing dropdown after selecting batch
+    setSelectedBatch(option); // Setting the selected batch
+    onSelectBatch(option); // Calling onSelectBatch function with selected batch as argument
   };
 
   return (
@@ -52,10 +49,10 @@ export default function FilterBoxBatch({ onSelectBatch }) {
             className="w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 outline-none"
             id="options-menu"
             aria-haspopup="true"
-            aria-expanded="true"
-            onChange={(e) => setSearch(e.target.value)}
-            value={search}
-            onClick={() => setShow(true)}
+            aria-expanded={show ? "true" : "false"}
+            onChange={(e) => setSearch(e.target.value)} // Setting search value as input changes
+            value={search} // Current value of search input
+            onClick={() => setShow(true)} // Showing dropdown on input click
           />
           {search && (
             <button
@@ -81,7 +78,7 @@ export default function FilterBoxBatch({ onSelectBatch }) {
       </div>
 
       {show && (
-        <div className="origin-top-right absolute left-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+        <div className="origin-top-right absolute left-0 mt-2 w-52 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
           <div
             className="py-1"
             role="menu"
@@ -93,17 +90,17 @@ export default function FilterBoxBatch({ onSelectBatch }) {
                 batch.kategori_batch.toLowerCase().includes(search.toLowerCase())
               )
               .map((batch, index) => (
-                <p
+                <button
                   key={index}
                   onClick={() => {
                     setSearch(batch.kategori_batch);
                     handleSelect(batch.batch_id);
                   }}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left"
                   role="menuitem"
                 >
                   {batch.kategori_batch}
-                </p>
+                </button>
               ))}
           </div>
         </div>

@@ -6,11 +6,7 @@ import {
 import SecureRoute from "@/components/SecureRoute";
 import AuthorizeLayout from "@/components/Layout/AuthorizeLayout";
 import NoAuthorizeLayout from "@/components/Layout/NoAuthorizeLayout";
-
-//  Anonymous Route
 import Login from "@/pages/Auth/Login";
-
-//  Logged In Route
 import Dashboard from "@/pages/Dashboard";
 import Batch from "@/pages/Batch/index";
 import Grading from "@/pages/Grading/index";
@@ -26,15 +22,13 @@ import Setting from "@/pages/Setting/index";
 export const Router = createBrowserRouter(
   createRoutesFromElements(
     <>
-      {/* route untuk halaman yang udah punya token / sudah login */}
-      <Route
+      <Route  //route yang dapat diakses oleh user jika berhasil login
         element={
           <SecureRoute>
             <AuthorizeLayout />
           </SecureRoute>
         }
       >
-        {/* route route nya */}
         <Route index element={<Dashboard />} />
         <Route path={"/batch"} element={<Batch />} />
         <Route path={"/createaccount"} element={<CreateAccount />} />
@@ -46,16 +40,13 @@ export const Router = createBrowserRouter(
         <Route path={"/edit-participant/:id"} element={<EditParticipant />} />
         <Route path={"/edit-profile/:id"} element={<EditProfile />} />
         <Route path={"/batch/:id"} element={<DetailBatch />} />
-        {/* <Route path={"/grading"} element={<Grading />} /> */}
         <Route path={"/grading/:id"} element={<Grading />} />
-        <Route
-          path={"/addparticipanttable"}
-          element={<AddParticipantTable />}
-        />
+        <Route path={"/addparticipanttable"} element={<AddParticipantTable />}/>
          <Route path={"/setting"} element={<Setting />} />
       </Route>
 
-      <Route element={<NoAuthorizeLayout />}>
+      {/* route yang dapat diakses jika user tidak bisa login */}
+      <Route element={<NoAuthorizeLayout />}> 
         <Route path={"/login"} element={<Login />} />
       </Route>
     </>

@@ -15,29 +15,34 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
 export default function Dashboard() {
+  // State variables
   const [batchId, setBatchId] = useState();
-  const [batchStatusToConfirmStatus, setBatchStatusToConfirmStatus] =
-    useState();
+  const [batchStatusToConfirmStatus, setBatchStatusToConfirmStatus] = useState();
   const [batchIdToDelete, setBatchIdToDelete] = useState(null);
   const [batchIdToConfirmStatus, setBatchIdToConfirmStatus] = useState(null);
   const [batchIdToAddParticipants, setBatchIdToAddParticipants] =
     useState(null);
 
+  // Query to fetch all participants data
   const {
     data: dataParticipants,
     refetch: refetchParticipants,
     isLoading: loadingParticipants,
   } = useQuery("allParticipants", allParticipantsFn);
 
+  // Query to fetch all batches data
   const {
     data: dataBatch,
     refetch: refetchBatch,
     isLoading: loadingBatch,
   } = useQuery("allBatch", allBatchFn);
 
+  // Filter active batches from dataBatch
   const activeBatch = dataBatch?.filter((batch) => batch.status_batch === true);
+  // Filter active participants from dataParticipants
   const activeParticipant = dataParticipants?.filter((participant) => participant.status === true);
 
+  // Mutation for deleting a batch
   const handleDeleteBatch = useMutation({
     mutationFn: (data) => deleteBatchFn(data),
 
@@ -51,6 +56,7 @@ export default function Dashboard() {
     },
   });
 
+   // Mutation for updating batch status
   const handleStatusResponse = useMutation({
     mutationFn: (id) => statusBatchFn(id),
 
@@ -64,9 +70,9 @@ export default function Dashboard() {
     },
   });
 
+   // Function to handle confirmation of batch deletion
   const handleConfirmDelete = async () => {
     try {
-      // Tampilkan alert konfirmasi SweetAlert
       const result = await Swal.fire({
         title: "Are you sure?",
         text: "You won't be able to revert this!",
@@ -97,9 +103,9 @@ export default function Dashboard() {
     }
   };
 
+    // Function to handle confirmation of batch status update
   const handleConfirmStatus = async () => {
     try {
-      // Tentukan teks dan ikon berdasarkan status_batch
       const alertTitle =
         batchStatusToConfirmStatus === true
           ? "Active Batch"
@@ -113,7 +119,6 @@ export default function Dashboard() {
           ? "Yes, nonactive it!"
           : "Yes, active it!";
 
-      // Tampilkan alert konfirmasi SweetAlert sesuai dengan kondisi batch
       const result = await Swal.fire({
         title: alertTitle,
         text: alertText,
@@ -125,7 +130,6 @@ export default function Dashboard() {
       });
 
       if (result.isConfirmed) {
-        // Lakukan perubahan status batch dan tampilkan alert berhasil SweetAlert
         await handleStatusResponse.mutateAsync(batchIdToConfirmStatus);
         Swal.fire({
           title: "Batch Status Updated!",
@@ -146,10 +150,12 @@ export default function Dashboard() {
     }
   };
 
+    // Function to handle closing the modal for adding batch participants
   const handleCloseAddBatchParticipantsModal = () => {
     setBatchIdToAddParticipants(null);
   };
 
+  // Function to automatically confirm batch status update when batchIdToConfirmStatus and batchStatusToConfirmStatus change
   useEffect(() => {
     if (
       batchIdToConfirmStatus !== null &&
@@ -159,6 +165,7 @@ export default function Dashboard() {
     }
   }, [batchIdToConfirmStatus, batchStatusToConfirmStatus]);
 
+  // Function to automatically confirm batch deletion when batchIdToDelete changes
   useEffect(() => {
     if (batchIdToDelete !== null) {
       handleConfirmDelete();
@@ -383,7 +390,7 @@ export default function Dashboard() {
                     }}
                   >
                     <div className="card-actions justify-end">
-                      <button className="btn bg-[#06476F] w-15 text-white">
+                      <button className="btn bg-[#06476F] w-15 text-white hover:!bg-transparent hover:!text-sky-900">
                         Check
                       </button>
                     </div>

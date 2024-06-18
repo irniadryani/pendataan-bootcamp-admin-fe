@@ -2,7 +2,6 @@ import axios from "axios";
 import { getBackendHost } from "../backend";
 import useStore from "@/store";
 
-
 // Konfigurasi Headers
 const headersReg = {
   "Content-Type": "application/json",

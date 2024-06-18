@@ -5,8 +5,10 @@ import { useMutation, useQuery } from "react-query";
 import Swal from "sweetalert2";
 
 export default function EditBatch({ refetch, batchId }) {
+  // State for tracking if form is closed
   const [isFormClosed, setIsFormClosed] = useState(false);
 
+  // Form handling
   const {
     register,
     handleSubmit: submitEditBatch,
@@ -22,6 +24,7 @@ export default function EditBatch({ refetch, batchId }) {
     },
   });
 
+  // Query to fetch single batch data
   const {
     data: dataSingleBatch,
     refetch: refetchSingleBatch,
@@ -30,14 +33,17 @@ export default function EditBatch({ refetch, batchId }) {
     enabled: false,
   });
 
+   // Query to refetch all batches after update
   const { refetch: refetchBatch } = useQuery("allBatch", allBatchFn);
 
+  // Function to refetch single batch data when batchId changes
   useEffect(() => {
     if (batchId !== null || batchId !== undefined) {
       refetchSingleBatch();
     }
   }, [batchId, refetchSingleBatch]);
 
+   // Function to populate form fields with fetched data
   useEffect(() => {
     if (!loadingSingleBatch && dataSingleBatch) {
       resetEditBatch({
@@ -50,6 +56,7 @@ export default function EditBatch({ refetch, batchId }) {
     }
   }, [loadingSingleBatch, dataSingleBatch, resetEditBatch]);
 
+   // Mutation hook for updating batch
   const handleUpdateBatch = useMutation({
     mutationFn: (data) => updateBatchFn(batchId, data),
 
@@ -91,6 +98,7 @@ export default function EditBatch({ refetch, batchId }) {
     },
   });
 
+   // Function to handle form submission and update
   const updateBatch = (data) => {
     const batchData = new FormData();
     console.log("data", batchData);
@@ -106,7 +114,8 @@ export default function EditBatch({ refetch, batchId }) {
 
     handleUpdateBatch.mutateAsync(batchData);
   };
-
+  
+ // Function to reset isFormClosed state
   const handleCloseForm = () => {
     setIsFormClosed(false);
   };
@@ -115,7 +124,6 @@ export default function EditBatch({ refetch, batchId }) {
     <dialog id="edit_batch_modal" className="modal">
       <div className="modal-box h-auto">
         <form method="dialog">
-          {/* if there is a button in form, it will close the modal */}
           <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
             ✕
           </button>

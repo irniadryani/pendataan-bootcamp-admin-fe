@@ -8,21 +8,21 @@ import { useLocation } from "react-router-dom";
 import FilterBoxBatch from "@/components/Feature/FilterBoxBatch";
 
 export default function Participants() {
+   //Fetching all participant using react-query
   const {
     data: dataParticipants,
     refetch: refetchParticipants,
     isLoading: loadingParticipants,
   } = useQuery("allParticipants", allParticipantsFn);
 
-  const location = useLocation();
+  const location = useLocation(); // Accessing location object from react-router-dom
 
+  // State variables
   const [search, setSearch] = useState("");
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [selectedBatch, setSelectedBatch] = useState(null);
 
-  console.log("search", search);
-  console.log("status", selectedStatus);
-
+   // Filtering participants based on search, status, and batch filters
   const filteredParticipants = dataParticipants?.filter((participant) => {
     const matchingStatus =
       selectedStatus === "" || participant.status === selectedStatus;
@@ -36,6 +36,7 @@ export default function Participants() {
     const matchingStatusAndName =
       matchingStatus && matchingBatch && matchingName;
 
+        // Logic to determine when to return true for displaying a participant
     if (selectedStatus === null && matchingBatch === null && search === "") {
       return true;
     }
@@ -65,18 +66,19 @@ export default function Participants() {
     }
   });
 
-  console.log("filter", filteredParticipants);
-
+   // Function to handle status filter change
   const handleStatusChange = (status) => {
     setSelectedStatus(status);
   };
 
+    // Function to handle batch filter change
   const handleBatchChange = (batch) => {
     setSelectedBatch(batch);
   };
 
   console.log("status", selectedStatus);
   console.log("filter", filteredParticipants);
+  
 
   return (
     <div>

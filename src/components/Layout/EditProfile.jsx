@@ -8,8 +8,6 @@ import Swal from "sweetalert2";
 import { IoCamera } from "react-icons/io5";
 
 export default function EditProfile({ pengajarId, refetchPengajar }) {
-  console.log("id user", pengajarId);
-
   const {
     register,
     handleSubmit: submitEditProfile,
@@ -23,6 +21,7 @@ export default function EditProfile({ pengajarId, refetchPengajar }) {
     },
   });
 
+  // Query to fetch single pengajar data based on pengajarId
   const {
     data: dataSinglePengajar,
     refetch: refetchSinglePengajar,
@@ -31,12 +30,14 @@ export default function EditProfile({ pengajarId, refetchPengajar }) {
     detailSinglePengajarFn(pengajarId)
   );
 
+   // useEffect to refetch single pengajar data when pengajarId changes
   useEffect(() => {
     if (pengajarId !== null || pengajarId !== undefined) {
       refetchSinglePengajar();
     }
   }, [pengajarId, refetchSinglePengajar]);
 
+  // useEffect to set form values when single pengajar data is loaded
   useEffect(() => {
     if (!loadingSinglePengajar && dataSinglePengajar) {
       resetEditProfile({
@@ -47,6 +48,7 @@ export default function EditProfile({ pengajarId, refetchPengajar }) {
     }
   }, [loadingSinglePengajar, dataSinglePengajar, resetEditProfile]);
 
+  // useMutation for updating pengajar profile
   const handleUpdateProfile = useMutation({
     mutationFn: (data) => updatePengajarFn(pengajarId, data),
 
@@ -76,6 +78,7 @@ export default function EditProfile({ pengajarId, refetchPengajar }) {
     },
   });
 
+   // Function to handle profile update
   const updateProfile = (data) => {
     const pengajarData = new FormData();
     console.log("data", pengajarData);

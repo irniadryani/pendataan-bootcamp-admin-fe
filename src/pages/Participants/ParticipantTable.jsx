@@ -16,11 +16,13 @@ export default function ParticipantTable({
   refetch,
   currentPaginationTable,
 }) {
-  const [currentPage, setCurrentPage] = useState(currentPaginationTable);
+  const [currentPage, setCurrentPage] = useState(currentPaginationTable); // State variable for current page of pagination
 
+  // Query to fetch all participants
   const { refetch: refetchParticipants, isLoading: loadingParticipants } =
     useQuery("allParticipants", allParticipantsFn);
 
+  // Effect to set current page based on props
   useEffect(() => {
     if (currentPaginationTable !== undefined) {
       setCurrentPage(currentPaginationTable);
@@ -29,6 +31,7 @@ export default function ParticipantTable({
     }
   }, [currentPaginationTable]);
 
+   // Mutation to delete a participant
   const handleDeleteParticipants = useMutation({
     mutationFn: (data) => deleteParticipantsFn(data),
     onMutate() {},
@@ -41,6 +44,7 @@ export default function ParticipantTable({
     },
   });
 
+  // Function to confirm deletion of a participant
   const handleConfirmDelete = async (idPeserta) => {
     try {
       const result = await Swal.fire({
@@ -57,7 +61,7 @@ export default function ParticipantTable({
         await handleDeleteParticipants.mutateAsync(idPeserta);
         Swal.fire({
           title: "Deleted!",
-          text: "Your file has been deleted.",
+          text: "Participant has been deleted.",
           icon: "success",
         });
       }
@@ -70,6 +74,7 @@ export default function ParticipantTable({
     }
   };
 
+  // Constants for pagination calculation
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -77,22 +82,26 @@ export default function ParticipantTable({
   const npage = Math.ceil(dataParticipants?.length / recordsPerPage);
   const numbers = [...Array(npage + 1).keys()].slice(1);
 
+   // Function to move to previous page
   const prePage = () => {
     if (currentPage !== lastIndex) {
       setCurrentPage(currentPage - 1);
     }
   };
 
+  // Function to change current page
   const changeCPage = (id) => {
     setCurrentPage(id);
   };
 
+   // Function to move to next page
   const nextPage = () => {
     if (currentPage !== lastIndex) {
       setCurrentPage(currentPage + 1);
     }
   };
 
+   // Function to reset current page when pagination changes
   useEffect(() => {
     if (
       currentPaginationTable === undefined ||
@@ -101,8 +110,6 @@ export default function ParticipantTable({
       setCurrentPage(1);
     }
   }, [currentPaginationTable]);
-
-  console.log("curent pagination", currentPaginationTable);
 
   return (
     <div>

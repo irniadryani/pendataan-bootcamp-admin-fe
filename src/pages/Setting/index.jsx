@@ -18,6 +18,7 @@ import { Link } from "react-router-dom";
 import { HiEye, HiEyeOff } from "react-icons/hi";
 
 export default function Index() {
+   //Fetching all setting data using react-query
   const {
     data: dataSetting,
     refetch: refetchSetting,
@@ -25,6 +26,7 @@ export default function Index() {
     isRefetching: refetchingSetting,
   } = useQuery("setting", settingFn);
 
+  // Using useForm hook to manage form state
   const {
     register,
     handleSubmit,
@@ -58,8 +60,10 @@ export default function Index() {
     },
   });
 
-  const defaultImageProfile = watch("default_image_profile");
+  // Function for updating Default Image Profile for User and Admin Application
+  const defaultImageProfile = watch("default_image_profile"); // Watch the value of "default_image_profile" input field
 
+  // Effect to set form value when dataSetting is loaded
   useEffect(() => {
     if (!loadingSetting && dataSetting) {
       setValue(
@@ -69,6 +73,7 @@ export default function Index() {
     }
   }, [loadingSetting, dataSetting]);
 
+  // Mutation to update default profile image setting
   const handleUpdateSetting = useMutation({
     mutationFn: (data) => updateDefaultProfileFn(data),
     onSuccess: async (res) => {
@@ -103,6 +108,7 @@ export default function Index() {
     },
   });
 
+  // Function to update setting data
   const updateSetting = (data) => {
     const settingData = new FormData();
 
@@ -113,21 +119,21 @@ export default function Index() {
     handleUpdateSetting.mutateAsync(settingData);
   };
 
+  // State to store selected file
   const [selectedFile, setSelectedFile] = useState(null);
 
+  // Handler for file input change
   const handleFileChange = (e) => {
     setSelectedFile(e.target.files[0]);
   };
 
+  // Handler for edit button click to trigger file input click
   const handleEditButtonClick = () => {
     const fileInput = document.getElementById("fileInput");
     fileInput.click();
   };
 
-  console.log(defaultImageProfile);
-
-  //image home user
-
+  // Function for updating Default Image Home Page on User Application
   const imageHomeUser = watch("image_home_user");
 
   useEffect(() => {
@@ -191,10 +197,8 @@ export default function Index() {
     fileInputHomeImageUser.click();
   };
 
-  console.log(selectedFileHomeImageuser);
 
-  //text home user
-
+  // Function for updating Text on Home Page on User Application 
   const textHomeUser = watch("text_home_user");
 
   useEffect(() => {
@@ -241,8 +245,7 @@ export default function Index() {
     }
   };
 
-  // update default batch image
-
+  // Function for updating Default Image Batch on Admin Application
   const defaultImageBatch = watch("default_image_batch");
 
   useEffect(() => {
@@ -306,7 +309,7 @@ export default function Index() {
     fileInputDefaultBatchImage.click();
   };
 
-  //link gdrive cv
+ // Function for updating Link Gdrive CV on Admin Application
 
   const linkDriveCV = watch("link_drive_cv");
 
@@ -354,10 +357,9 @@ export default function Index() {
     }
   };
 
-  const inputRef = useRef(null); // tambahkan ref
+  const inputRef = useRef(null); 
 
-  // link gdrive certficate
-
+ // Function for updating Link Gdrive Certificate on Admin Application
   const linkDriveCerti = watch("link_drive_certi");
 
   useEffect(() => {
@@ -404,8 +406,7 @@ export default function Index() {
     }
   };
 
-  // logo admin
-
+  // Function for updating Image Logo on Admin Application
   const adminLogo = watch("image_logo_admin");
 
   useEffect(() => {
@@ -466,10 +467,7 @@ export default function Index() {
     fileInputLogoAdmin.click();
   };
 
-  console.log(adminLogo);
-
-  // logo user
-
+   // Function for updating Image Logo on User Application
   const userLogo = watch("image_logo_user");
 
   useEffect(() => {
@@ -532,7 +530,7 @@ export default function Index() {
 
   console.log(userLogo);
 
-  //default password
+   // Function for updating Default Password for Participant Account
 
   const defaultPassword = watch("default_password");
 
@@ -592,6 +590,7 @@ export default function Index() {
             <h2 className="card-title font-semibold text-center h-14">
               User Profile Image
             </h2>
+            {/* Form for update user profile image */}
             <FormProvider {...useForm}>
               <form
                 onSubmit={handleSubmit(updateSetting)}
@@ -602,7 +601,7 @@ export default function Index() {
                     <label htmlFor="default_image_profile"></label>
 
                     <img
-                      className="object-cover  w-full h-full object-center rounded-full"
+                      className="object-cover w-full h-full object-center rounded-full"
                       src={
                         selectedFile !== null
                           ? URL.createObjectURL(selectedFile)
@@ -657,6 +656,9 @@ export default function Index() {
                   )}
                 </div>
               </form>
+              <p className="mt-2 font-medium text-sm text-black text-center">
+                Max width 300px
+              </p>
             </FormProvider>
           </div>
         </div>
@@ -666,6 +668,7 @@ export default function Index() {
             <h2 className="card-title font-semibold text-center h-14">
               Default User Dashboard Image
             </h2>
+            {/* Form for update default user dashboard image*/}
             <FormProvider {...useForm}>
               <form
                 onSubmit={handleSubmit(updateImageHomeUser)}
@@ -731,6 +734,10 @@ export default function Index() {
                   )}
                 </div>
               </form>
+
+              <p className="mt-2 font-bold text-sm text-black">
+                Max width 320px{" "}
+              </p>
             </FormProvider>
           </div>
         </div>
@@ -740,6 +747,7 @@ export default function Index() {
             <h2 className="card-title font-semibold h-14 align-top items-start">
               Batch Image
             </h2>
+            {/* Form for update batch image */}
             <FormProvider {...useForm}>
               <form
                 onSubmit={handleSubmit(updateDefaultBatchImage)}
@@ -805,17 +813,21 @@ export default function Index() {
                   )}
                 </div>
               </form>
+              <p className="mt-2 font-medium text-sm text-black text-center">
+                Max height 176px
+              </p>
             </FormProvider>
           </div>
         </div>
       </div>
-      {/* logo admin  dan user */}
+    
       <div className="flex flex-col md:flex-row gap-5">
         <div className="card bg-base-100 shadow-xl w-full">
           <div className="card-body flex items-center flex-col gap-5">
             <h2 className="card-title font-semibold h-14 align-top items-start">
               Logo Admin
             </h2>
+            {/* Form for update admin logo image */}
             <FormProvider {...useForm}>
               <form
                 onSubmit={handleSubmit(updateImageLogoAdmin)}
@@ -881,6 +893,9 @@ export default function Index() {
                   )}
                 </div>
               </form>
+              <p className="mt-2 font-medium text-sm text-black text-center">
+                Max width 144px
+              </p>
             </FormProvider>
           </div>
         </div>
@@ -890,6 +905,7 @@ export default function Index() {
             <h2 className="card-title font-semibold h-14 align-top items-start">
               Logo User
             </h2>
+            {/* Form for update admin and user logo */}
             <FormProvider {...useForm}>
               <form
                 onSubmit={handleSubmit(updateSettingLogoUser)}
@@ -955,41 +971,15 @@ export default function Index() {
                   )}
                 </div>
               </form>
+              <p className="mt-2 font-medium text-sm text-black text-center">
+                Max width 144px
+              </p>
             </FormProvider>
           </div>
         </div>
       </div>
-      <FormProvider {...useForm}>
-        <form onSubmit={handleSubmit(updateTextHomeUser)}>
-          <div className="flex flex-col md:flex-row gap-5">
-            <div className="flex flex-col w-full max-w-2xl">
-              <label
-                htmlFor="text_home_user"
-                className="form-control w-full max-w-2xl"
-              >
-                <div className="label">
-                  <span className="label-text font-semibold">
-                    Text Home User
-                  </span>
-                </div>
-              </label>
-              <textarea
-                type="text"
-                placeholder="Type here"
-                className="textarea textarea-bordered rounded-lg py-3"
-                {...register("text_home_user")}
-              />
-            </div>
-            <div className="flex items-end">
-              <div className="card-actions">
-                <button type="submit" className="btn bg-[#06476F] text-white">
-                  Save
-                </button>
-              </div>
-            </div>
-          </div>
-        </form>
-      </FormProvider>
+      
+      {/* Form for update link gdrive cv*/}
       <FormProvider {...useForm}>
         <form onSubmit={handleSubmit(updateLinkGdrive)}>
           <div className="flex flex-col md:flex-row gap-5">
@@ -1011,7 +1001,7 @@ export default function Index() {
                 {...register("link_drive_cv")}
               />
             </div>
-            <div className="flex items-end">
+            <div className="flex items-end gap-2">
               {dataSetting &&
                 dataSetting.contents.link_drive_cv !== null &&
                 dataSetting.contents.link_drive_cv !== undefined && (
@@ -1035,6 +1025,7 @@ export default function Index() {
           </div>
         </form>
       </FormProvider>
+      {/* Form for update link gdrive certificate*/}
       <FormProvider {...useForm}>
         <form onSubmit={handleSubmit(updateLinkCertif)}>
           <div className="flex flex-col md:flex-row gap-5">
@@ -1056,7 +1047,7 @@ export default function Index() {
                 {...register("link_drive_certi")}
               />
             </div>
-            <div className="flex items-end">
+            <div className="flex items-end gap-2">
               {dataSetting &&
                 dataSetting.contents.link_drive_certi !== null &&
                 dataSetting.contents.link_drive_certi !== undefined && (
@@ -1080,6 +1071,7 @@ export default function Index() {
           </div>
         </form>
       </FormProvider>
+      {/* Form for update default password participant account*/}
       <FormProvider {...useForm}>
         <form onSubmit={handleSubmit(updateDefaultPassword)}>
           <div className="flex flex-col md:flex-row gap-5">
@@ -1100,9 +1092,7 @@ export default function Index() {
                     type={showDefPassword ? "text" : "password"}
                     placeholder="Type here"
                     className="input input-bordered rounded-lg py-3 w-full" // Menambahkan kelas w-full di sini
-                    {...register("default_password", {
-                      required: "Default Password must be provided!",
-                    })}
+                    {...register("default_password")}
                   />
                   <button
                     type="button"

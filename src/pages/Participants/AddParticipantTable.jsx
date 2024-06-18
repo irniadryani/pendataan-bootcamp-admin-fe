@@ -6,21 +6,25 @@ import Swal from "sweetalert2";
 import { addBatchParticipantsFn, getBatchParticipant } from "@/api/Batch";
 
 export default function AddParticipantTable({ batchId, dataParticipants }) {
+  //State variables
   const [selectedParticipants, setSelectedParticipants] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
 
+   // Query to fetch batch participants
   const { refetch: refetchBatchParticipants } = useQuery(
     ["Batch Participants", batchId],
     () => getBatchParticipant(batchId),
     { enabled: false }
   );
 
+  // Effect to refetch batch participants when batchId changes
   useEffect(() => {
     if (batchId !== null || batchId !== undefined) {
       refetchBatchParticipants();
     }
   }, [refetchBatchParticipants, batchId]);
 
+  // Handler for checkbox change
   const handleCheckboxChange = (participantId) => {
     setSelectedParticipants((prevSelected) => {
       if (prevSelected.includes(participantId)) {
@@ -31,6 +35,7 @@ export default function AddParticipantTable({ batchId, dataParticipants }) {
     });
   };
 
+   // Handler for select all checkbox change
   const handleSelectAllChange = () => {
     setSelectAll(!selectAll);
     setSelectedParticipants(
@@ -40,6 +45,7 @@ export default function AddParticipantTable({ batchId, dataParticipants }) {
     );
   };
 
+   // Mutation to add batch participants
   const handleAddBatchParticipants = useMutation({
     mutationFn: (data) => addBatchParticipantsFn(batchId, data),
 
@@ -54,6 +60,7 @@ export default function AddParticipantTable({ batchId, dataParticipants }) {
     },
   });
 
+  // Function to handle adding batch participants
   const addBatchParticipantsData = async () => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -89,10 +96,12 @@ export default function AddParticipantTable({ batchId, dataParticipants }) {
     }
   };
 
+   // Filtering participants not already in the batch
   const filteredParticipants = dataParticipants?.filter(
     (participants) => participants.batch_id !== batchId
   );
 
+  // Pagination state and logic
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
@@ -101,16 +110,19 @@ export default function AddParticipantTable({ batchId, dataParticipants }) {
   const npage = Math.ceil(filteredParticipants?.length / recordsPerPage);
   const numbers = [...Array(npage + 1).keys()].slice(1);
 
+    // Function to go to previous page
   const prePage = () => {
     if (currentPage !== lastIndex) {
       setCurrentPage(currentPage - 1);
     }
   };
 
+  // Function to change current page
   const changeCPage = (id) => {
     setCurrentPage(id);
   };
 
+  // Function to go to next page
   const nextPage = () => {
     if (currentPage !== lastIndex) {
       setCurrentPage(currentPage + 1);
@@ -215,6 +227,7 @@ export default function AddParticipantTable({ batchId, dataParticipants }) {
       </nav>
       <div className="w-full flex justify-end mt-2">
         <button
+          disabled={selectedParticipants.length === 0}
           className="btn btn-ghost btn-xl bg-[#06476F] text-white rounded-sm mt-4 mb-5"
           type="submit"
           onClick={() => {

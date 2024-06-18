@@ -16,22 +16,22 @@ import { HiOutlineBars3CenterLeft } from "react-icons/hi2";
 
 export default function AuthorizeLayout(props) {
   const { content } = props;
+  const store = useStore();
+  const navigate = useNavigate();
 
+  // Fetch current user data
   const {
     data: dataCurrentUser,
     refetch: refetchPengajar,
     isLoading: loadingParticipants,
   } = useQuery("authUser", currentUserFn);
 
-  const store = useStore();
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    store.setUserToken(null);
-    navigate("/login");
-    toast.success("You successfully logged out");
-    navigate(from);
-  };
+    // Handle logout
+    const handleLogout = () => {
+      store.setUserToken(null); // Clear user token in store
+      navigate("/login"); // Navigate to login page
+      toast.success("You successfully logged out"); // Show success toast
+    };
 
   return (
     <main>
@@ -140,6 +140,7 @@ export default function AuthorizeLayout(props) {
               </dialog>
             </div>
           </div>
+          {/* Passing data to modal */}
           <EditProfile
             refetchPengajar={refetchPengajar}
             pengajarId={dataCurrentUser?.pengajar?.id}

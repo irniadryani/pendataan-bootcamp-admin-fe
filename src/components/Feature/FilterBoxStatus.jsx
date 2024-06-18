@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 
 export default function FilterBoxStatus({ onSelectStatus }) {
+  // State Variables
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionName, setSelectedOptionName] = useState(null);
 
-  const options = [
+  //Option list
+  const options = [ 
     {
       option_name: "All",
       value: "",

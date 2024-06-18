@@ -12,12 +12,13 @@ import Swal from "sweetalert2";
 import { IoReorderFourOutline } from "react-icons/io5";
 
 export default function Grading() {
-  const { id } = useParams();
-  const location = useLocation();
-  const { namaPeserta, kategoriBatch, materiBatch, batch_id } = location.state;
-  const participantId = atob(id);
-  const navigate = useNavigate();
+  const { id } = useParams();  // Extracting participant ID from URL parameters
+  const location = useLocation(); // Accessing location object from react-router-dom for state
+  const { namaPeserta, kategoriBatch, materiBatch, batch_id } = location.state; // Destructuring state variables from location
+  const participantId = atob(id); // Decoding participant ID from base64
+  const navigate = useNavigate(); // Navigation function from react-router-dom
 
+  // Query to fetch single participant details
   const {
     data: dataSingleParticipant,
     refetch: refetchSingleParticipant,
@@ -26,12 +27,14 @@ export default function Grading() {
     detailSingleParticipantsFn(participantId)
   );
 
+   // Function to refetch participant details when participantId changes
   useEffect(() => {
     if (participantId !== null || participantId !== undefined) {
       refetchSingleParticipant();
     }
   }, [refetchSingleParticipant, participantId]);
 
+  // Function to populate input fields with existing grading data
   useEffect(() => {
     if (
       !loadingSingleParticipant &&
@@ -48,6 +51,7 @@ export default function Grading() {
     }
   }, [loadingSingleParticipant, dataSingleParticipant]);
 
+  // Function to populate notes textarea with existing notes data
   useEffect(() => {
     if (
       !loadingSingleParticipant &&
@@ -59,32 +63,34 @@ export default function Grading() {
     }
   }, [loadingSingleParticipant, dataSingleParticipant]);
 
+   // State for input fields (grading categories and values)
   const [inputFields, setInputFields] = useState([
     { nama_kategori: "", nilai: "" },
   ]);
 
+   // State for notes input
   const [notes, setNotes] = useState();
 
+   // Function to handle change in input fields
   const handleChangeInput = (index, event) => {
     const values = [...inputFields];
     values[index][event.target.name] = event.target.value;
     setInputFields(values);
   };
 
+  // Function to add a new grading category and value field
   const handleAddFields = () => {
     setInputFields([...inputFields, { nama_kategori: "", nilai: "" }]);
   };
 
+   // Function to remove a grading category and value field
   const handleRemoveFields = (index) => {
     const values = [...inputFields];
     values.splice(index, 1);
     setInputFields(values);
   };
 
-  console.log("input fields", inputFields);
-  console.log("input notes", notes);
-  console.log("data peserta", dataSingleParticipant);
-
+  // Mutation to update grading data for the participant
   const handleUpdateGrading = useMutation({
     mutationFn: (data) => gradingParticipantFn(participantId, data),
 
@@ -111,23 +117,24 @@ export default function Grading() {
     },
   });
 
+  // Function to handle form submission for grading
   const handleSubmitGrading = () => {
     const gradingData = new FormData();
-    console.log("grading data", gradingData);
 
+    // Constructing grading data object
     const penilaiansArray = inputFields.map((field) => ({
       nama_kategori: field.nama_kategori,
       nilai: Number(field.nilai),
     }));
 
+     // Convert penilaiansArray to string and append to FormData
     const penilaiansString = penilaiansArray
       .map((penilaian) => JSON.stringify(penilaian))
       .join(",");
 
-    console.log("penilaian", penilaiansString);
-
     gradingData.append("penilaian", penilaiansString);
 
+    // Append notes to FormData if it exists
     if (notes !== undefined && notes !== null && notes !== "") {
       gradingData.append("notes", notes);
     }
@@ -135,10 +142,12 @@ export default function Grading() {
     handleUpdateGrading.mutateAsync(gradingData);
   };
 
+  // Function to handle drag start for reordering grading categories
   const dragStart = (e, index) => {
     e.dataTransfer.setData("draggedItemIndex", index);
   };
 
+   // Function to handle drop for reordering grading categories
   const drop = (e, index) => {
     e.preventDefault();
     const draggedItemIndex = e.dataTransfer.getData("draggedItemIndex");

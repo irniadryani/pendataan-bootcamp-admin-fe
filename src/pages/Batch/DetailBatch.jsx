@@ -11,18 +11,23 @@ import { CSVLink } from "react-csv";
 import ExportFile from "./Modal/ExportFile";
 
 export default function DetailBatch() {
-  const { id } = useParams();
+  const { id } = useParams(); // Get batch ID from URL params
   const location = useLocation();
+
+  // State variables
   const [updatedHires, setUpdatedHires] = useState({});
   const [participantId, setParticipantId] = useState();
-  // const { kategoriBatch } = location.state;
   const { kategoriBatch, deskripsiBatch } = location.state || {
     kategoriBatch: "DefaultCategory",
     deskripsiBatch: null,
   };
+  const [search, setSearch] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState(null);
 
+  // Decode batch ID from base64
   const batchId = atob(id);
 
+  //// Fetch batch participants data
   const {
     data: dataBatchParticipants,
     refetch: refetchBatchParticipants,
@@ -30,15 +35,17 @@ export default function DetailBatch() {
   } = useQuery(
     ["Batch Participants", batchId],
     () => getBatchParticipant(batchId),
-    { enabled: false }
+    { enabled: false } // Fetch data only when enabled is true
   );
 
+  // Fetch single batch details data
   const { data: dataSingleBatch, refetch: refetchSingleBatch } = useQuery(
     ["Single Batch", batchId],
     () => singleBatchFn(batchId),
     { enabled: false }
   );
 
+  // Refetch data when batchId changes
   useEffect(() => {
     if (batchId !== null || batchId !== undefined) {
       refetchBatchParticipants();
@@ -46,9 +53,7 @@ export default function DetailBatch() {
     }
   }, [refetchBatchParticipants, refetchSingleBatch, batchId]);
 
-  const [search, setSearch] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState(null);
-
+   // Filter participants based on status and search criteria
   const filteredParticipants = dataBatchParticipants?.filter((participant) => {
     const matchingStatus =
       selectedStatus === "" || participant.status === selectedStatus;
@@ -75,13 +80,10 @@ export default function DetailBatch() {
     }
   });
 
+  // Function to handle status change filter
   const handleStatusChange = (status) => {
     setSelectedStatus(status);
   };
-
-  console.log("status", selectedStatus);
-  console.log("filter", filteredParticipants);
-
   
   return (
     <div>
@@ -211,6 +213,7 @@ export default function DetailBatch() {
   );
 }
 
+// EditableHireField component for editing participant hire
 const EditableHireField = ({
   hire,
   participantId,
@@ -221,15 +224,14 @@ const EditableHireField = ({
   const [editing, setEditing] = useState(false);
   const [editedHire, setEditedHire] = useState(hire);
 
-  console.log("participant id", startEditId);
-
+ // Mutation to update participant hire
   const handleUpdateParticipantHireBy = useMutation({
     mutationFn: (data) => updateParticipantFn(startEditId, data),
 
     onMutate() {},
     onSuccess: (res) => {
       console.log(res);
-      // Refresh data setelah penyimpanan berhasil
+      // Refresh data after successful update
       refetchBatchParticipants();
     },
     onError: (error) => {
@@ -237,6 +239,7 @@ const EditableHireField = ({
     },
   });
 
+   // Function to update hire by participant
   const updateHireBy = (newHire) => {
     const data = {
       hireBy: newHire,
@@ -247,11 +250,13 @@ const EditableHireField = ({
     });
   };
 
+   // Function to handle edit mode
   const handleEdit = () => {
     setEditing(true);
     startEdit();
   };
 
+ // Function to handle cancel edit
   const handleCancel = () => {
     setEditing(false);
     setEditedHire(hire);
@@ -260,6 +265,7 @@ const EditableHireField = ({
   return (
     <div>
       {editing ? (
+        // Form for editing hire
         <form
           onSubmit={(e) => {
             e.preventDefault();

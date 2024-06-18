@@ -9,8 +9,7 @@ import { useMutation, useQuery } from "react-query";
 import Swal from "sweetalert2";
 
 export default function ChangePassword({ pengajarId, refetchPengajar }) {
-  console.log("id user", pengajarId);
-
+   // State variables for toggling password visibility
   const [showCurPassword, setShowCurPassword] = useState();
   const toggleCurPassword = () => setShowCurPassword((prev) => !prev);
 
@@ -20,6 +19,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
   const [showConfPassword, setShowConfPassword] = useState(false);
   const toggleConfPassword = () => setShowConfPassword((prev) => !prev);
 
+  // Form handling using react-hook-form
   const {
     register,
     handleSubmit: submitChangePassword,
@@ -34,18 +34,21 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
     },
   });
 
+  // Query to fetch single pengajar data based on pengajarId
   const {
     data: dataSinglePengajar,
     refetch: refetchSinglePengajar,
     isLoading: loadingSinglePengajar,
   } = useQuery(["pengajar", pengajarId], () => pengajarId);
 
+   // useEffect to refetch single pengajar data when pengajarId changes
   useEffect(() => {
     if (pengajarId !== null || pengajarId !== undefined) {
       refetchSinglePengajar();
     }
   }, [pengajarId, refetchSinglePengajar]);
 
+   // useEffect to set form values when single pengajar data is loaded
   useEffect(() => {
     if (!loadingSinglePengajar && dataSinglePengajar) {
       resetChangePassword({
@@ -55,6 +58,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
     }
   }, [loadingSinglePengajar, dataSinglePengajar, resetChangePassword]);
 
+  // useMutation for handling password change
   const handleChangePassword = useMutation({
     mutationFn: (data) => changePasswordPengajarFn(pengajarId, data),
 
@@ -84,6 +88,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
     },
   });
 
+  // Function to handle password update
   const updatePassword = (data) => {
     const pengajarData = new FormData();
     console.log("data", pengajarData);
@@ -114,8 +119,8 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
               onSubmit={submitChangePassword(updatePassword)}
               className="flex flex-col gap-2 mt-2"
             >
-              <div className="w-full max-w-xs ">
-                <div className="form-control w-full max-w-xs relative flex">
+              <div className="w-full max-w-2xl ">
+                <div className="form-control relative flex">
                   <label className="label">
                     <span className="label-text">Current Password</span>
                   </label>
@@ -123,7 +128,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
                     <input
                       type={showCurPassword ? "text" : "password"}
                       placeholder="Type here"
-                      className="input input-bordered w-full max-w-xs rounded-lg pr-10"
+                      className="input input-bordered w-full max-w-2xl rounded-lg pr-10"
                       {...register("currentPassword", {
                         required: "Current Password must be provided!",
                         minLength: {
@@ -157,7 +162,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
               </div>
 
               <div>
-                <div className="form-control w-full max-w-xs relative">
+                <div className="form-control w-full max-w-2xl relative">
                   <label className="label">
                     <span className="label-text">New Password</span>
                   </label>
@@ -165,7 +170,7 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
                     <input
                       type={showPassword ? "text" : "password"}
                       placeholder="Type here"
-                      className="input input-bordered w-full max-w-xs rounded-lg pr-10"
+                      className="input input-bordered w-full max-w-2xl rounded-lg pr-10"
                       {...register("newPassword", {
                         required: "New Password must be provided!",
                         minLength: {
@@ -199,14 +204,14 @@ export default function ChangePassword({ pengajarId, refetchPengajar }) {
               </div>
 
               <div>
-                <div className="form-control w-full max-w-xs relative">
+                <div className="form-control w-full max-w-2xl relative">
                   <label className="label">
                     <span className="label-text">Confirm New Password</span>
                   </label>
                   <input
                     type={showConfPassword ? "text" : "password"}
                     placeholder="Type here"
-                    className="input input-bordered w-full max-w-xs rounded-lg pr-10"
+                    className="input input-bordered w-full max-w-2xl rounded-lg pr-10"
                     {...register("confPassword", {
                       required: "Confirm Password must be provided!",
                       minLength: {

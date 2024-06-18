@@ -10,10 +10,10 @@ import { useState } from "react";
 import { Tooltip } from "react-tooltip";
 
 export default function DetailParticipant() {
-  const { id } = useParams();
+  const { id } = useParams(); // Getting participant ID from URL parameters using useParams hook
+  const [copied, setCopied] = useState(false); // State variable to track if content is copied
 
-  const [copied, setCopied] = useState(false);
-
+  // Fetching single participant details using useQuery from react-query
   const {
     data: dataSingleParticipant,
     refetch: refetchSingleParticipant,
@@ -56,13 +56,14 @@ export default function DetailParticipant() {
 
                 <div className="flex items-center">
                   <a
-                    href={dataSingleParticipant.email || "#"}
+                    href={`mailto:${dataSingleParticipant.email}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 mx-3 font-medium text-sm mt-1 text-underline mb-2"
                   >
                     {dataSingleParticipant.email || "-"}
                   </a>
+
                   <div onMouseOut={() => setCopied(false)}>
                     <CopyToClipboard
                       text={dataSingleParticipant.email || "-"}
@@ -92,6 +93,7 @@ export default function DetailParticipant() {
                   </p>
                 )}
                 {dataSingleParticipant.nomor_handphone && (
+                  //Function for direct the number phone to whatsapp
                   <Link
                     target="_blank"
                     to={`https://wa.me/${dataSingleParticipant.nomor_handphone}`}

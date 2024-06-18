@@ -25,8 +25,9 @@ import Swal from "sweetalert2";
 import { CSVLink, CSVDownload } from "react-csv";
 import { read, utils, writeFile } from 'xlsx';
 
-
 export default function Batch() {
+  //State variables for managing modals and batch actions
+  const [batchId, setBatchId] = useState();
   const [batchIdToDelete, setBatchIdToDelete] = useState(null);
   const [batchIdToConfirmStatus, setBatchIdToConfirmStatus] = useState(null);
   const [batchIdToAddParticipants, setBatchIdToAddParticipants] =
@@ -34,18 +35,14 @@ export default function Batch() {
   const [batchStatusToConfirmStatus, setBatchStatusToConfirmStatus] =
     useState();
 
-  console.log("status", batchStatusToConfirmStatus);
-
+  //Fetching all batches using react-query
   const {
     data: dataBatch,
     refetch: refetchBatch,
     isLoading: loadingBatch,
   } = useQuery("allBatch", allBatchFn);
 
- 
-
-  const [batchId, setBatchId] = useState();
-
+  // Mutation hook for deleting a batch
   const handleDeleteBatch = useMutation({
     mutationFn: (data) => deleteBatchFn(data),
 
@@ -59,6 +56,7 @@ export default function Batch() {
     },
   });
 
+  //Mutation hook for updating batch status (active/non-active)
   const handleStatusResponse = useMutation({
     mutationFn: (id) => statusBatchFn(id),
 
@@ -72,6 +70,7 @@ export default function Batch() {
     },
   });
 
+  // Handling confirmation dialog for deleting a batch
   const handleConfirmDelete = async () => {
     try {
       const result = await Swal.fire({
@@ -104,8 +103,7 @@ export default function Batch() {
     }
   };
 
-  console.log("data batch", dataBatch);
-
+  // Handling confirmation dialog for updating batch status
   const handleConfirmStatus = async () => {
     try {
       const alertTitle =
@@ -152,10 +150,12 @@ export default function Batch() {
     }
   };
 
+   // Close modal for adding participants to a batch
   const handleCloseAddBatchParticipantsModal = () => {
     setBatchIdToAddParticipants(null);
   };
 
+  // UseEffect for handling batch status confirmation
   useEffect(() => {
     if (
       batchIdToConfirmStatus !== null &&
@@ -165,6 +165,7 @@ export default function Batch() {
     }
   }, [batchIdToConfirmStatus, batchStatusToConfirmStatus]);
 
+  // UseEffect for handling batch deletion confirmation
   useEffect(() => {
     if (batchIdToDelete !== null) {
       handleConfirmDelete();
@@ -193,14 +194,16 @@ export default function Batch() {
               className="card card-compact w-60 bg-base-100 shadow-xl "
             >
               <figure>
+                <div className="h-44 w-full">
                 <img
                   src={`${import.meta.env?.VITE_IMAGE_HOST?.replace(
                     /\/$/,
                     ""
                   )}/${batch.url}`}
                   alt="Shoes"
-                  className="h-44 w-full object-cover relative"
+                  className="h-full w-full object-cover relative"
                 />
+                </div>
                 <div className="absolute top-2 right-2">
                   <div className="bg-white/30 rounded-full px-4 py-2 backdrop-blur-md">
                     {batch.status_batch === true && (
@@ -340,7 +343,7 @@ export default function Batch() {
                   }}
                 >
                   <div className="card-actions justify-end">
-                    <button className="btn bg-[#06476F] w-15 text-white">
+                    <button className="btn bg-[#06476F] w-15 text-white hover:!bg-transparent hover:!text-sky-900">
                       Check
                     </button>
                   </div>
@@ -351,6 +354,7 @@ export default function Batch() {
         </div>
       </div>
 
+      {/* Passing data to the modal */}
       <AddBatch refetch={refetchBatch} />
       <EditBatch refetch={refetchBatch} batchId={batchId} />
       <AddParticipants

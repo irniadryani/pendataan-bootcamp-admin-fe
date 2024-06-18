@@ -9,12 +9,14 @@ import Swal from "sweetalert2";
 import { MdOutlineKeyboardArrowDown } from "react-icons/md";
 
 export default function StatusParticipant({ status, id, refetch }) {
+  //State variables
   const [isOpen, setIsOpen] = useState(false);
   const [key, setKey] = useState(0);
   const [participantIdToConfirmStatus, setparticipantIdToConfirmStatus] = useState(null);
   const [participantStatusToConfirmStatus, setparticipantStatusToConfirmStatus] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
 
+  // Function to toggle dropdown open/close
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
     setKey((prevKey) => prevKey + 1);
@@ -24,11 +26,13 @@ export default function StatusParticipant({ status, id, refetch }) {
     setIsOpen(false);
   };
 
+   // Fetching single participant details using useQuery from react-query
   const { refetch: refetchSingleParticipant } = useQuery(
     ["participant", id],
     () => detailSingleParticipantsFn(id)
   );
 
+   // Mutation function to handle participant status update
   const handleStatusResponse = useMutation({
     mutationFn: () => statusParticipantFn(id),
     onMutate() {},
@@ -43,6 +47,7 @@ export default function StatusParticipant({ status, id, refetch }) {
     },
   });
 
+   // Function to handle confirmation of participant status update
   const handleConfirmStatus = async (status) => {
     try {
       const alertTitle = status ? "Active Participant" : "Nonactive Participant";
@@ -65,8 +70,6 @@ export default function StatusParticipant({ status, id, refetch }) {
 
       if (result.isConfirmed) {
         await handleStatusResponse.mutateAsync(participantIdToConfirmStatus, status);
-
-        // SweetAlert for success
         Swal.fire({
           title: "Participant Status Updated!",
           text: "Your Participant status has been updated.",
@@ -81,7 +84,6 @@ export default function StatusParticipant({ status, id, refetch }) {
       }
     } catch (error) {
       console.error(error);
-      // SweetAlert for error
       Swal.fire({
         title: "Error",
         text: "Failed to update Participant status",

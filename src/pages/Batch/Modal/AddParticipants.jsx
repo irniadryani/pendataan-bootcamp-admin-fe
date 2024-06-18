@@ -8,17 +8,21 @@ import Swal from "sweetalert2";
 import { addBatchParticipantsFn, getBatchParticipant } from "@/api/Batch";
 
 export default function AddParticipants({ batchId, onClose }) {
+  // Query to fetch all participants
   const { data: dataParticipants, isLoading: loadingParticipants } = useQuery(
     "allParticipants",
     allParticipantsFn
   );
 
+   // State for search input
   const [search, setSearch] = useState("");
 
+   // Filter participants based on batchId
   const filteredParticipants = dataParticipants?.filter(
     (participants) => participants.batch_id !== batchId
   );
 
+  // Filter participants based on search input
   const searchParticipantsData = filteredParticipants?.filter(
     (participant) =>
       participant?.nama_peserta?.toLowerCase().includes(search.toLowerCase()) ||

@@ -2,7 +2,6 @@ import { NavLink as Link, useLocation, useNavigate } from "react-router-dom";
 import WgsLogo from "@/assets/logo_wgs_fullBlack.svg";
 import { LiaTimesSolid } from "react-icons/lia";
 import { HiOutlineBars3CenterLeft } from "react-icons/hi2";
-
 import { toast } from "react-toastify";
 import { GoHome } from "react-icons/go";
 import { HiOutlineUserGroup } from "react-icons/hi";
@@ -12,6 +11,7 @@ import { IoMdSettings } from "react-icons/io";
 import { settingFn } from "@/api/Setting";
 import { useQuery } from "react-query";
 
+ // Navigation item for dashboard
 const navigation = [
   { name: "Home", href: "/", icon: <GoHome />, current: false },
   {
@@ -40,9 +40,11 @@ const navigation = [
   },
 ];
 
+// Sidebar component for navigation and displaying user information
 export default function Sidebar({ children }) {
-  const location = useLocation();
+  const location = useLocation(); // Getting current location using useLocation hook
 
+   // Mapping navigation items and updating current based on current pathname
   const updatedNavigation = navigation.map((item) => {
     return {
       ...item,
@@ -50,17 +52,13 @@ export default function Sidebar({ children }) {
     };
   });
 
-  console.log(updatedNavigation);
-
-  console.log(location.pathname);
-
+ // Fetching setting data using useQuery from react-query
   const {
     data: dataSetting,
     refetch: refetchSetting,
     isLoading: loadingSetting,
     isRefetching: refetchingSetting,
   } = useQuery("setting", settingFn);
-
 
   return (
     <div className="drawer !h-dvh lg:drawer-open bg-white">
@@ -75,14 +73,16 @@ export default function Sidebar({ children }) {
           className="drawer-overlay"
         ></label>
         <div className="flex flex-col p-4 w-full sm:w-80 h-[100%] bg-base-200 text-base-content">
-          <div className="h-[10%] mb-2 mt-4 px-4 flex items-center justify-between lg:justify-center">
-            <img
-              src={`${import.meta.env?.VITE_IMAGE_HOST?.replace(/\/$/, "")}/${
-                dataSetting?.contents?.image_logo_admin
-              }`}
-              alt="Shoes"
-              className="w-20"
-            />
+          <div className="h-32 mb-2 mt-4 px-4 flex items-center justify-between lg:justify-center">
+            <div className="flex w-36 h-auto">
+              <img
+                src={`${import.meta.env?.VITE_IMAGE_HOST?.replace(/\/$/, "")}/${
+                  dataSetting?.contents?.image_logo_admin
+                }`}
+                alt="logo"
+                className="w-full"
+              />
+            </div>
             <label
               htmlFor="my-drawer-2"
               aria-label="open sidebar"
@@ -114,58 +114,8 @@ export default function Sidebar({ children }) {
               </li>
             ))}
           </ul>
-
-          {/* <div className='divider h-[5%]'></div>
-						<div className='flex h-[15%] items-center justify-between'>
-							<div className='flex items-center gap-3'>
-								<div className='rounded-full shadow-sm'>
-									<img
-										className='rounded-full w-16'
-										src={dummyAvatarImg}
-										alt=''
-									/>
-								</div>
-								<div>
-									<p className='text-lg font-semibold capitalize'>
-										
-									</p>
-									<p className=''>
-										
-									</p>
-								</div>
-							</div>
-							<Button
-								className='tooltip tooltip-secondary h-fit'
-								variant='solid'
-								color='transparent'
-								data-tip='Logout'
-								onClick={() =>
-									document
-										.getElementById('confirm-logout-modal')
-										.showModal()
-								}
-							>
-								<BiLogOut size={24} color='#E74C3C' />
-							</Button>
-						</div> */}
         </div>
       </div>
-      {/* <dialog id='confirm-logout-modal' className='modal'>
-				<div className='modal-box'>
-					<h3 className='font-bold text-lg text-[#E74C3C]'>Logout</h3>
-					<p className='py-4'>Are you sure you want to logout?</p>
-					<div className='modal-action'>
-						<form method='dialog'>
-							<Button className='btn !rounded-lg'>Close</Button>
-							<Button
-								className='btn !rounded-lg text-[#E74C3C]'
-							>
-								Logout
-							</Button>
-						</form>
-					</div>
-				</div>
-			</dialog> */}
     </div>
   );
 }
